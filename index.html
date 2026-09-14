@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Library STT GIDI Papua - Perpustakaan Digital</title>
+    
+    <!-- Meta SEO & Open Graph -->
+    <meta name="description" content="Perpustakaan Digital Sekolah Tinggi Teologi (STT) Gereja Injili di Indonesia (GIDI) Papua - Sentani, Jayapura. Akses katalog buku Teologi, PAK, dan literatur Kristen.">
+    <meta name="author" content="STT GIDI Papua">
+    <link rel="icon" href="https://sttgidi.com/img/logo-stt-gidi-small.png" type="image/png">
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#6f42c1', // Primary GIDI Purple
+                            700: '#59359a', // Darker Accent
+                            800: '#4c1d95',
+                            900: '#3b0764',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Alpine.js 3.x CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+
+    <!-- Custom Styling & Utility Overrides -->
+    <style>
+        [x-cloak] { display: none !important; }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        /* Custom Scrollbar for Modal and Lists */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c4b5fd;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6f42c1;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-600 selection:text-white"
+    x-data="elibraryApp()" 
+    x-init="initData()">
+
+    <!-- Toast Notification -->
+    <div x-cloak 
+         x-show="toast.show" 
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="translate-y-8 opacity-0"
+         x-transition:enter-end="translate-y-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="translate-y-0 opacity-100"
+         x-transition:leave-end="translate-y-8 opacity-0"
+         class="fixed bottom-5 right-5 z-50 flex items-center gap-3 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-slate-700 max-w-md">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span class="text-sm font-medium" x-text="toast.message"></span>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo & Title -->
+                <a href="#beranda" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-xl bg-brand-50 border border-brand-200 flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition-transform">
+                        <img src="https://sttgidi.com/img/logo-stt-gidi-small.png" alt="Logo STT GIDI Papua" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/100x100/6f42c1/ffffff?text=GIDI';">
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">E-LIBRARY</span>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-brand-100 text-brand-700">STT GIDI</span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Sekolah Tinggi Teologi GIDI Papua</p>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+                    <a href="#beranda" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-brand-50 transition-colors">Beranda</a>
+                    <a href="#katalog" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-brand-50 transition-colors">Katalog Buku</a>
+                    <a href="#tentang" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-brand-50 transition-colors">Tentang</a>
+                    <a href="#syarat" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-brand-50 transition-colors">Syarat & Ketentuan</a>
+                    <a href="#faq" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-brand-50 transition-colors">FAQ</a>
+                    <a href="#kontak" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-brand-50 transition-colors">Kontak</a>
+                </nav>
+
+                <!-- Search Quick Trigger / Direct Button -->
+                <div class="hidden sm:flex items-center gap-3">
+                    <a href="#katalog" @click="focusSearch()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-md shadow-brand-600/20 hover:shadow-brand-600/30 transition-all active:scale-95">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        <span>Cari Buku</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Hamburger Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Toggle Navigation">
+                    <i class="fa-solid" :class="mobileMenuOpen ? 'fa-xmark text-xl' : 'fa-bars text-xl'"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div x-cloak x-show="mobileMenuOpen" x-collapse class="md:hidden border-t border-slate-100 bg-white px-4 pt-2 pb-6 space-y-1 shadow-lg">
+            <a href="#beranda" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Beranda</a>
+            <a href="#katalog" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Katalog Buku</a>
+            <a href="#tentang" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Tentang E-Library</a>
+            <a href="#syarat" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Syarat & Ketentuan</a>
+            <a href="#galeri" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Galeri Perpustakaan</a>
+            <a href="#faq" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">FAQ</a>
+            <a href="#kontak" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Kontak</a>
+        </div>
+    </header>
+
+    <main id="beranda">
+        <!-- Hero Section -->
+        <section class="relative bg-gradient-to-b from-brand-50/70 via-slate-50 to-slate-50 py-16 lg:py-24 overflow-hidden">
+            <!-- Decorative Subtle Grid Background -->
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center max-w-3xl mx-auto">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100 text-brand-700 text-xs sm:text-sm font-semibold mb-6 border border-brand-200/60 shadow-sm">
+                        <i class="fa-solid fa-book-bookmark text-brand-600"></i>
+                        <span>Pusat Literatur Teologi & Pendidikan Kristen Papua</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-tight mb-6">
+                        Akses Koleksi Literatur <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-800">STT GIDI Papua</span> Secara Digital
+                    </h1>
+                    <p class="text-base sm:text-lg text-slate-600 mb-8 font-normal leading-relaxed">
+                        Jelajahi karya teologis, buku referensi Pendidikan Agama Kristen, jurnal, dan karya akademik civitas akademika STT GIDI Papua di Sentani, Jayapura.
+                    </p>
+                    
+                    <!-- Hero Quick Stats Badge -->
+                    <div class="flex flex-wrap justify-center gap-4 sm:gap-8 text-slate-700 pt-2 border-t border-slate-200/80">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-book"></i>
+                            </div>
+                            <div class="text-left">
+                                <span class="block text-sm font-bold text-slate-900" x-text="books.length + ' Koleksi'"></span>
+                                <span class="text-xs text-slate-500">Judul Buku Terdaftar</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <div class="text-left">
+                                <span class="block text-sm font-bold text-slate-900" x-text="categories.length + ' Kategori'"></span>
+                                <span class="text-xs text-slate-500">Klasifikasi Keilmuan</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <div class="text-left">
+                                <span class="block text-sm font-bold text-slate-900">Akre. Terakreditasi</span>
+                                <span class="text-xs text-slate-500">Program S.Th & S.Pd</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search & Filter Bar Section -->
+        <section id="katalog" class="pt-8 pb-12 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-5 sm:p-7">
+                    <div class="mb-5">
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-brand-600"></i>
+                            <span>Pencarian & Filter Katalog</span>
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">Cari berdasarkan judul, penulis, ISBN, atau topik materi teologis.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                        <!-- Search Keyword Input -->
+                        <div class="md:col-span-5 relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-search"></i>
+                            </div>
+                            <input type="text" 
+                                   x-ref="searchInput"
+                                   x-model="searchQuery" 
+                                   @input="currentPage = 1"
+                                   placeholder="Ketik judul buku, kata kunci, ISBN..." 
+                                   class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all placeholder:text-slate-400">
+                            <button x-cloak x-show="searchQuery.length > 0" 
+                                    @click="searchQuery = ''; currentPage = 1" 
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Filter Category Dropdown -->
+                        <div class="md:col-span-3">
+                            <div class="relative">
+                                <select x-model="selectedCategory" 
+                                        @change="currentPage = 1" 
+                                        class="w-full pl-3.5 pr-8 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all appearance-none cursor-pointer">
+                                    <option value="">Semua Kategori</option>
+                                    <template x-for="cat in categories" :key="cat">
+                                        <option :value="cat" x-text="cat"></option>
+                                    </template>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Author Dropdown -->
+                        <div class="md:col-span-3">
+                            <div class="relative">
+                                <select x-model="selectedAuthor" 
+                                        @change="currentPage = 1" 
+                                        class="w-full pl-3.5 pr-8 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all appearance-none cursor-pointer">
+                                    <option value="">Semua Author/Penulis</option>
+                                    <template x-for="aut in authors" :key="aut">
+                                        <option :value="aut" x-text="aut"></option>
+                                    </template>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reset Filter Button -->
+                        <div class="md:col-span-1 flex justify-end">
+                            <button @click="resetFilters()" 
+                                    title="Reset Filter"
+                                    class="w-full md:w-auto h-11 px-4 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-rotate-left text-xs"></i>
+                                <span class="md:hidden">Reset</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Filter Chips Indicator -->
+                    <div x-cloak x-show="searchQuery || selectedCategory || selectedAuthor" class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+                        <span class="text-slate-500 font-medium">Filter Aktif:</span>
+                        
+                        <template x-if="searchQuery">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-200">
+                                Keyword: "<span x-text="searchQuery"></span>"
+                                <button @click="searchQuery = ''; currentPage = 1" class="hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
+                            </span>
+                        </template>
+
+                        <template x-if="selectedCategory">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-200">
+                                Kategori: <span x-text="selectedCategory"></span>
+                                <button @click="selectedCategory = ''; currentPage = 1" class="hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
+                            </span>
+                        </template>
+
+                        <template x-if="selectedAuthor">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-200">
+                                Penulis: <span x-text="selectedAuthor"></span>
+                                <button @click="selectedAuthor = ''; currentPage = 1" class="hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
+                            </span>
+                        </template>
+
+                        <button @click="resetFilters()" class="text-brand-600 hover:text-brand-800 underline font-semibold ml-auto">
+                            Hapus Semua Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Book Catalog Section -->
+        <section class="pb-16 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Section Header with Counter -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Katalog Buku Terbaru</h3>
+                        <p class="text-xs text-slate-500">Menampilkan hasil koleksi perpustakaan sesuai filter yang dipilih</p>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-600 bg-slate-200/60 px-3 py-1.5 rounded-lg">
+                        Total: <span class="text-brand-700 font-bold" x-text="filteredBooks.length"></span> Buku Ditemukan
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <template x-if="filteredBooks.length === 0">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto my-8">
+                        <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-800 mb-1">Buku Tidak Ditemukan</h4>
+                        <p class="text-sm text-slate-500 mb-6">Tidak ada koleksi buku yang cocok dengan kata kunci atau filter yang Anda pilih.</p>
+                        <button @click="resetFilters()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all">
+                            Reset Semua Filter
+                        </button>
+                    </div>
+                </template>
+
+                <!-- Books Grid (Requirement: 6 Columns x 2 Rows = 12 items per page) -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
+                    <template x-for="book in paginatedBooks" :key="book.id">
+                        <div class="group bg-white rounded-xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden h-full">
+                            <!-- Book Cover Thumbnail -->
+                            <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden cursor-pointer" @click="openBookDetail(book)">
+                                <img :src="book.cover" 
+                                     :alt="book.judul" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='https://placehold.co/400x533/6f42c1/ffffff?text=Buku+Teologi';">
+                                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span class="bg-white/90 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                                        <i class="fa-solid fa-eye text-brand-600 mr-1"></i> Detail
+                                    </span>
+                                </div>
+                                <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm truncate max-w-[85%]" x-text="book.kategori"></span>
+                            </div>
+
+                            <!-- Book Info Card Body -->
+                            <div class="p-3.5 flex flex-col flex-grow justify-between bg-white">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-brand-700 mb-0.5 truncate" x-text="book.author"></p>
+                                    <h4 @click="openBookDetail(book)" 
+                                        class="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 hover:text-brand-600 cursor-pointer leading-snug mb-1.5" 
+                                        :title="book.judul" 
+                                        x-text="book.judul"></h4>
+                                    <p class="text-[11px] text-slate-500 line-clamp-2 leading-tight mb-2" x-text="book.keteranganSingkat"></p>
+                                </div>
+
+                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 mt-auto">
+                                    <span x-text="book.tahunTerbit"></span>
+                                    <button @click="openBookDetail(book)" class="text-brand-600 font-bold hover:underline flex items-center gap-1">
+                                        <span>Lihat</span>
+                                        <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Pagination Component -->
+                <div x-cloak x-show="totalPages > 1" class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500">
+                        Menampilkan halaman <span class="font-bold text-slate-800" x-text="currentPage"></span> dari <span class="font-bold text-slate-800" x-text="totalPages"></span> halaman
+                    </div>
+
+                    <div class="inline-flex items-center gap-1.5">
+                        <button @click="goToPage(currentPage - 1)" 
+                                :disabled="currentPage === 1" 
+                                class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                            <i class="fa-solid fa-chevron-left mr-1"></i> Prev
+                        </button>
+
+                        <template x-for="p in totalPages" :key="p">
+                            <button @click="goToPage(p)" 
+                                    :class="currentPage === p ? 'bg-brand-600 text-white font-bold border-brand-600' : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'"
+                                    class="w-8 h-8 rounded-lg border text-xs font-semibold flex items-center justify-center transition-all"
+                                    x-text="p"></button>
+                        </template>
+
+                        <button @click="goToPage(currentPage + 1)" 
+                                :disabled="currentPage === totalPages" 
+                                class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                            Next <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="tentang" class="py-16 bg-white border-y border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-6 space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-university"></i> Tentang E-Library
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                            Pusat Sumber Belajar Teologi Berbasis Digital di Tanah Papua
+                        </h2>
+                        <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+                            E-Library STT GIDI Papua didirikan untuk memfasilitasi kebutuhan literatur akademik teologi, Pendidikan Agama Kristen (PAK), dan bahan kajian integratif bagi dosen, mahasiswa, pendoa, serta pimpinan gereja di Papua maupun luar daerah.
+                        </p>
+                        <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+                            Kampus utama kami yang berlokasi di Sentani, Kabupaten Jayapura, terus mengembangkan infrastruktur digital untuk memastikan pelayanan peminjaman, reservasi, dan konsultasi literatur berjalan efektif.
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="text-brand-600 font-extrabold text-2xl mb-1">Visi</div>
+                                <p class="text-xs text-slate-600">Menjadi pusat dokumentasi literatur Injili yang terpercaya dan kontekstual bagi pelayanan gereja di Papua.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="text-brand-600 font-extrabold text-2xl mb-1">Misi</div>
+                                <p class="text-xs text-slate-600">Menyediakan akses bahan pustaka yang inklusif, berkualitas, dan mendukung riset ilmiah teologis.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-6">
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-slate-100">
+                            <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1000&q=80" 
+                                 alt="Suasana Perpustakaan STT GIDI" 
+                                 class="w-full h-[380px] object-cover"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x600/6f42c1/ffffff?text=STT+GIDI+Library';">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent flex items-end p-6">
+                                <div class="text-white">
+                                    <p class="font-bold text-base">Gedung Perpustakaan Kampus Sentani</p>
+                                    <p class="text-xs text-slate-300">STT GIDI Papua - Kabupaten Jayapura</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Terms & Conditions Section -->
+        <section id="syarat" class="py-16 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-file-contract"></i> Aturan Layanan
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Syarat & Ketentuan Layanan</h2>
+                    <p class="text-sm text-slate-500 mt-2">Ketentuan peminjaman buku fisik dan akses repositori digital STT GIDI Papua.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                            1
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 mb-2">Keanggotaan & Kartu Perpustakaan</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Layanan perpustakaan berlaku untuk seluruh Civitas Akademika STT GIDI Papua (Dosen, Mahasiswa S1 Teologi, S1 PAK) yang telah mendaftarkan Kartu Anggota Perpustakaan aktif.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                            2
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 mb-2">Prosedur Peminjaman Buku</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Maksimal peminjaman adalah 3 judul buku selama 14 hari kalender. Perpanjangan dapat dilakukan 1 kali secara online melalui katalog atau melapor langsung ke petugas perpustakaan.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                            3
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 mb-2">Hak Cipta & Etika Digital</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Seluruh materi digital yang dipublikasikan dalam situs E-Library dilindungi hak cipta. Pengutipan karya wajib mencantumkan sumber sitasi resmi sesuai standar akademik.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery Section -->
+        <section id="galeri" class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">
+                            <i class="fa-solid fa-camera"></i> Suasana Kampus
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Galeri Perpustakaan & Kegiatan Membaca</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-500 max-w-md">Dokumentasi suasana fasilitas perpustakaan dan aktivitas belajar mahasiswa STT GIDI Papua.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=600&q=80" alt="Ruang Baca Kampus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                            <span class="text-white text-xs font-medium">Ruang Baca Utama</span>
+                        </div>
+                    </div>
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80" alt="Rak Koleksi Teologi" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                            <span class="text-white text-xs font-medium">Koleksi Rak Teologi</span>
+                        </div>
+                    </div>
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&q=80" alt="Diskusi Kelompok Mahasiswa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                            <span class="text-white text-xs font-medium">Area Diskusi Akademik</span>
+                        </div>
+                    </div>
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
+                        <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=600&q=80" alt="Komputer Katalog Digital" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                            <span class="text-white text-xs font-medium">Layanan Komputer OPAC</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-16 bg-slate-50 border-t border-slate-200">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-circle-question"></i> Bantuan & FAQ
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Pertanyaan Sering Diajukan</h2>
+                    <p class="text-sm text-slate-500 mt-2">Jawaban cepat seputar akses e-library dan prosedur perpustakaan STT GIDI Papua.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <template x-for="(faq, index) in faqs" :key="index">
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden transition-all">
+                            <button @click="faq.open = !faq.open" class="w-full px-5 py-4 text-left font-bold text-sm text-slate-800 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                <span x-text="faq.q"></span>
+                                <i class="fa-solid transition-transform duration-200 text-brand-600 text-xs" :class="faq.open ? 'fa-chevron-up rotate-180' : 'fa-chevron-down'"></i>
+                            </button>
+                            <div x-cloak x-show="faq.open" x-collapse class="px-5 pb-4 text-xs sm:text-sm text-slate-600 border-t border-slate-100 pt-3 leading-relaxed">
+                                <p x-text="faq.a"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="kontak" class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div class="lg:col-span-5 space-y-6">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+                                <i class="fa-solid fa-location-dot"></i> Kontak Perpustakaan
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Hubungi Kami</h2>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-2">Dapatkan layanan bantuan, informasi pustaka, atau pengajuan saran literatur.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-10 h-10 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Lokasi Kampus</h4>
+                                    <p class="text-xs text-slate-600 mt-0.5">Kecamatan Sentani, Kabupaten Jayapura, Papua - 99352</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-envelope-open-text"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Email Resmi Perpustakaan</h4>
+                                    <p class="text-xs text-slate-600 mt-0.5">sttgijayapura@gmail.com</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Telepon / WhatsApp</h4>
+                                    <p class="text-xs text-slate-600 mt-0.5">+62 821-8741-5686</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Jam Operasional Layanan</h4>
+                                    <p class="text-xs text-slate-600 mt-0.5">Senin - Jumat: 08:00 - 16:00 WIT</p>
+                                    <p class="text-xs text-slate-400">Sabtu, Minggu & Hari Libur Nasional: Tutup</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Message Form -->
+                    <div class="lg:col-span-7 bg-slate-50 p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 mb-1">Kirim Pesan atau Pengajuan Buku</h3>
+                        <p class="text-xs text-slate-500 mb-6">Silakan isi formulir di bawah ini untuk layanan referensi atau usulan koleksi baru.</p>
+
+                        <form @submit.prevent="submitForm()" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                                    <input type="text" required placeholder="Contoh: Ruben Wonda" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIM / NIDN / Umum</label>
+                                    <input type="text" placeholder="Isi nomor identitas jika civitas" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Email</label>
+                                <input type="email" required placeholder="nama@domain.com" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Subjek Pesan</label>
+                                <input type="text" required placeholder="Subjek pertanyaan / usul koleksi" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Isi Pesan</label>
+                                <textarea rows="4" required placeholder="Tuliskan pesan detail Anda..." class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all">
+                                Send Message / Kirim Pesan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Detail Buku Modal Component -->
+    <div x-cloak 
+         x-show="modalOpen" 
+         class="fixed inset-0 z-50 overflow-y-auto"
+         aria-labelledby="modal-title" 
+         role="dialog" 
+         aria-modal="true">
+        
+        <!-- Backdrop -->
+        <div x-show="modalOpen" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="closeModal()" 
+             class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity"></div>
+
+        <!-- Modal Dialog Container -->
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
+            <div x-show="modalOpen" 
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-4xl border border-slate-100">
+                
+                <!-- Close Button -->
+                <button @click="closeModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+
+                <template x-if="selectedBook">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-0">
+                        <!-- Left Column: Cover & Key Metadata -->
+                        <div class="md:col-span-5 bg-slate-50 p-6 sm:p-8 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-md mb-6 border border-slate-200/80 bg-white">
+                                    <img :src="selectedBook.cover" :alt="selectedBook.judul" class="w-full h-full object-cover">
+                                </div>
+
+                                <div class="space-y-2.5 text-xs text-slate-600">
+                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
+                                        <span class="font-semibold text-slate-500">Kategori:</span>
+                                        <span class="font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded" x-text="selectedBook.kategori"></span>
+                                    </div>
+                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
+                                        <span class="font-semibold text-slate-500">ISBN:</span>
+                                        <span class="font-mono text-slate-800" x-text="selectedBook.isbn"></span>
+                                    </div>
+                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
+                                        <span class="font-semibold text-slate-500">Tahun Terbit:</span>
+                                        <span class="font-semibold text-slate-800" x-text="selectedBook.tahunTerbit"></span>
+                                    </div>
+                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
+                                        <span class="font-semibold text-slate-500">Penerbit:</span>
+                                        <span class="font-semibold text-slate-800" x-text="selectedBook.penerbit"></span>
+                                    </div>
+                                    <div class="flex justify-between py-1.5">
+                                        <span class="font-semibold text-slate-500">Halaman:</span>
+                                        <span class="font-semibold text-slate-800" x-text="selectedBook.jumlahHalaman + ' Halaman'"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-200">
+                                <a href="#kontak" @click="closeModal()" class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all">
+                                    <i class="fa-solid fa-bookmark"></i>
+                                    <span>Ajukan Peminjaman</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Details & Description -->
+                        <div class="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-brand-600 uppercase tracking-wide">Detail Katalog Digital</span>
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1 mb-2 leading-snug" x-text="selectedBook.judul"></h2>
+                                <p class="text-xs sm:text-sm font-semibold text-slate-600 mb-4">
+                                    Penulis: <span class="text-brand-700 font-bold" x-text="selectedBook.author"></span>
+                                </p>
+
+                                <div class="border-t border-slate-100 pt-4 mb-6">
+                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">Ringkasan / Sinopsis Buku</h4>
+                                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed space-y-2 whitespace-pre-line" x-text="selectedBook.ringkasanLengkap"></p>
+                                </div>
+                            </div>
+
+                            <!-- Social Sharing & Copy Link Bar -->
+                            <div class="pt-4 border-t border-slate-100">
+                                <h5 class="text-xs font-bold text-slate-700 mb-3">Bagikan Informasi Buku Ini:</h5>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <!-- WhatsApp -->
+                                    <button @click="shareSocial('wa', selectedBook)" class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                                        <span>WhatsApp</span>
+                                    </button>
+
+                                    <!-- Facebook -->
+                                    <button @click="shareSocial('fb', selectedBook)" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                                        <i class="fa-brands fa-facebook-f text-sm"></i>
+                                        <span>Facebook</span>
+                                    </button>
+
+                                    <!-- Twitter/X -->
+                                    <button @click="shareSocial('tw', selectedBook)" class="px-3 py-2 bg-slate-900 hover:bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                                        <i class="fa-brands fa-x-twitter text-sm"></i>
+                                        <span>X / Twitter</span>
+                                    </button>
+
+                                    <!-- Copy Link -->
+                                    <button @click="copyBookLink(selectedBook)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ml-auto">
+                                        <i class="fa-solid fa-link text-sm"></i>
+                                        <span>Salin Tautan</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-slate-800">
+                <div class="md:col-span-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 p-1">
+                            <img src="https://sttgidi.com/img/logo-stt-gidi-small.png" alt="Logo STT GIDI" class="w-full h-full object-contain">
+                        </div>
+                        <span class="text-white font-extrabold text-lg">E-LIBRARY STT GIDI PAPUA</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+                        Layanan Perpustakaan Digital Sekolah Tinggi Teologi Gereja Injili di Indonesia (GIDI) Papua di Sentani, Jayapura. Mempersiapkan pelayan Tuhan yang unggul, berkarakter Kristus, dan berilmu Alkitabiah.
+                    </p>
+                </div>
+
+                <div class="md:col-span-3">
+                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3">Navigasi Utama</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#beranda" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#katalog" class="hover:text-white transition-colors">Katalog Buku</a></li>
+                        <li><a href="#tentang" class="hover:text-white transition-colors">Tentang E-Library</a></li>
+                        <li><a href="#syarat" class="hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+                        <li><a href="#faq" class="hover:text-white transition-colors">Pertanyaan Umum (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-4 space-y-3">
+                    <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-3">Tautan Luar & Jurnal</h4>
+                    <a href="https://journal.sttgidi.ac.id" target="_blank" rel="noopener font-bold" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold transition-colors">
+                        <i class="fa-solid fa-book text-xs"></i>
+                        <span>Kunjungi Journal STT GIDI</span>
+                    </a>
+                    <p class="text-[11px] text-slate-500">Terhubung dengan jurnal penelitian teologi resmi kampus.</p>
+                </div>
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <p>&copy; 2026 STT GIDI Papua. All Rights Reserved. Sentani, Jayapura, Papua.</p>
+                <p class="text-slate-600">Dikembangkan untuk Pengembangan Akademik Teologi Papua.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Alpine.js Application Script -->
+    <script>
+        function elibraryApp() {
+            return {
+                mobileMenuOpen: false,
+                modalOpen: false,
+                selectedBook: null,
+                searchQuery: '',
+                selectedCategory: '',
+                selectedAuthor: '',
+                currentPage: 1,
+                itemsPerPage: 12, // 6 columns x 2 rows = 12 items per page
+
+                toast: {
+                    show: false,
+                    message: ''
+                },
+
+                // Unique Category List
+                categories: [
+                    'Teologi Sistematik',
+                    'Pendidikan Agama Kristen',
+                    'Hermeneutika Alkitab',
+                    'Etika Kristen',
+                    'Sejarah Gereja & Misi',
+                    'Konseling Pastoral'
+                ],
+
+                // Unique Author List
+                authors: [
+                    'Pdt. Paipen Wonda, M.Th.',
+                    'Pdt. Dr. John R. Stott',
+                    'Pdt. Hengki Felle, M.A.',
+                    'Pdt. Kim Chul Gu, M.Div.',
+                    'Dr. Merrill C. Tenney',
+                    'Pdt. Dolfinus Suebu, M.Th.',
+                    'Dr. Harun Hadiwijono'
+                ],
+
+                // Realistic Theological & PAK Books Dataset (15 Books)
+                books: [
+                    {
+                        id: 1,
+                        cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Teologi Eklesiologi Injili di Tanah Papua',
+                        kategori: 'Teologi Sistematik',
+                        author: 'Pdt. Paipen Wonda, M.Th.',
+                        keteranganSingkat: 'Kajian teologis mendalam mengenai pertumbuhan gereja Injili di Papua dan dinamika pelayanan konteks lokal.',
+                        isbn: '978-602-1234-01-9',
+                        tahunTerbit: 2022,
+                        penerbit: 'STT GIDI Press Sentani',
+                        jumlahHalaman: 284,
+                        ringkasanLengkap: 'Buku ini membahas konsep gereja yang alkitabiah, mandiri, dan berakar kuat dalam budaya Papua. Melalui tinjauan biblika dan historis, penulis menguraikan perjalanan Gereja Injili di Indonesia (GIDI) serta tantangan misi holistik di abad ke-21.\n\nSangat cocok untuk mahasiswa S1 Teologi, pendeta, dan praktisi misi gereja.'
+                    },
+                    {
+                        id: 2,
+                        cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Pengantar Hermeneutika Alkitab Kontekstual',
+                        kategori: 'Hermeneutika Alkitab',
+                        author: 'Pdt. Hengki Felle, M.A.',
+                        keteranganSingkat: 'Prinsip-prinsip penafsiran Alkitab secara rinci dari teks bahasa asli ke dalam pemahaman jemaat.',
+                        isbn: '978-602-1234-02-6',
+                        tahunTerbit: 2021,
+                        penerbit: 'Papua Theological Publishing',
+                        jumlahHalaman: 310,
+                        ringkasanLengkap: 'Hermeneutika merupakan kunci utama dalam merumuskan khotbah dan pengajaran Injil yang murni. Buku ini membimbing pembaca memahami latar belakang sejarah, tata bahasa, serta penerapan praktis agar terhindar dari eksegesis yang salah.'
+                    },
+                    {
+                        id: 3,
+                        cover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Pendidikan Agama Kristen Kurikulum Berbasis Karakter',
+                        kategori: 'Pendidikan Agama Kristen',
+                        author: 'Pdt. Kim Chul Gu, M.Div.',
+                        keteranganSingkat: 'Panduan pengajaran PAK anak dan remaja dalam lingkungan sekolah dan gereja lokal.',
+                        isbn: '978-602-1234-03-3',
+                        tahunTerbit: 2020,
+                        penerbit: 'STT GIDI Press Sentani',
+                        jumlahHalaman: 245,
+                        ringkasanLengkap: 'Pembentukan karakter Kristiani sejak dini adalah fondasi generasi penerus di Papua. Buku kurikulum PAK ini menyajikan metodologi pengajaran interaktif yang relevan bagi para guru PAK dan pembina pemuda.'
+                    },
+                    {
+                        id: 4,
+                        cover: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Etika Kristen dan Isu-Isu Sosial Kontemporer',
+                        kategori: 'Etika Kristen',
+                        author: 'Pdt. Dolfinus Suebu, M.Th.',
+                        keteranganSingkat: 'Pendekatan etis Alkitabiah menghadapi tantangan modernisasi, keadilan, dan keutuhan ciptaan.',
+                        isbn: '978-602-1234-04-0',
+                        tahunTerbit: 2023,
+                        penerbit: 'Cahaya Teologi Jayapura',
+                        jumlahHalaman: 215,
+                        ringkasanLengkap: 'Buku ini menganalisis prinsip etika Kristen dalam menghadapi berbagai isu sosial modern. Memberikan pijakan iman bagi mahasiswa teologi agar mampu memberikan suara kenabian yang santun dan berintegritas.'
+                    },
+                    {
+                        id: 5,
+                        cover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Sejarah Perintisan Misi dan Pekabaran Injil di Pegunungan Papua',
+                        kategori: 'Sejarah Gereja & Misi',
+                        author: 'Pdt. Paipen Wonda, M.Th.',
+                        keteranganSingkat: 'Dokumentasi historis perjuangan misionaris lokal dan luar negeri dalam membuka daerah pelayanan baru.',
+                        isbn: '978-602-1234-05-7',
+                        tahunTerbit: 2019,
+                        penerbit: 'GIDI Heritage Press',
+                        jumlahHalaman: 412,
+                        ringkasanLengkap: 'Sebuah catatan sejarah berharga tentang bagaimana Injil masuk dan mengubah tatanan kehidupan masyarakat di pedalaman Papua. Dilengkapi foto dokumentasi masa lalu dan saksi sejarah.'
+                    },
+                    {
+                        id: 6,
+                        cover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Konseling Pastoral Bagi Keluarga dan Jemaat',
+                        kategori: 'Konseling Pastoral',
+                        author: 'Pdt. Dolfinus Suebu, M.Th.',
+                        keteranganSingkat: 'Metode pendampingan jiwa berbasis empati Kristiani bagi jemaat yang mengalami pergumulan hidup.',
+                        isbn: '978-602-1234-06-4',
+                        tahunTerbit: 2021,
+                        penerbit: 'STT GIDI Press Sentani',
+                        jumlahHalaman: 260,
+                        ringkasanLengkap: 'Setiap hamba Tuhan dipanggil menjadi gembala yang merawat jiwa. Buku ini menguraikan teknik dasar konseling, pendengaran aktif, dan pemulihan trauma konteks masyarakat lokal.'
+                    },
+                    {
+                        id: 7,
+                        cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Kristologi: Pribadi dan Karya Kristus',
+                        kategori: 'Teologi Sistematik',
+                        author: 'Dr. Harun Hadiwijono',
+                        keteranganSingkat: 'Penyelidikan alkitabiah mengenai doktrin ke-Allahan dan kemanusiaan Yesus Kristus.',
+                        isbn: '978-979-415-102-1',
+                        tahunTerbit: 2018,
+                        penerbit: 'BPK Gunung Mulia',
+                        jumlahHalaman: 340,
+                        ringkasanLengkap: 'Buku teks standar teologi dogmatika mengenai doktrin Kristologi. Membahas nubuat Perjanjian Lama, penggenapan dalam Perjanjian Baru, dan relevansi iman Kristologis hari ini.'
+                    },
+                    {
+                        id: 8,
+                        cover: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Murid Kristus yang Radikal (The Radical Disciple)',
+                        kategori: 'Etika Kristen',
+                        author: 'Pdt. Dr. John R. Stott',
+                        keteranganSingkat: 'Panggilan pemusidanan yang setia dalam aspek kepedulian sosial, kesederhanaan, dan keesaan.',
+                        isbn: '978-979-3290-88-2',
+                        tahunTerbit: 2017,
+                        penerbit: 'Literatur SAAT',
+                        jumlahHalaman: 180,
+                        ringkasanLengkap: 'Karya klasik John Stott yang menantang orang percaya untuk tidak hanya sekadar mengaku Kristen, namun menjadi murid radikal yang hidupnya mencerminkan nilai-nilai Kerajaan Allah.'
+                    },
+                    {
+                        id: 9,
+                        cover: 'https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Survei Perjanjian Baru Bagi Mahasiswa Teologi',
+                        kategori: 'Hermeneutika Alkitab',
+                        author: 'Dr. Merrill C. Tenney',
+                        keteranganSingkat: 'Latar belakang sejarah, kebudayaan, dan kanonisasi 27 kitab Perjanjian Baru.',
+                        isbn: '978-979-8131-40-5',
+                        tahunTerbit: 2016,
+                        penerbit: 'Gandum Mas',
+                        jumlahHalaman: 512,
+                        ringkasanLengkap: 'Buku pegangan utama pengantar Perjanjian Baru di kampus teologi. Dilengkapi peta geografis, bagan silsilah, dan analisa tema-tema utama tiap kitab.'
+                    },
+                    {
+                        id: 10,
+                        cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Strategi Pengajaran PAK Efektif di Daerah Pedalaman',
+                        kategori: 'Pendidikan Agama Kristen',
+                        author: 'Pdt. Kim Chul Gu, M.Div.',
+                        keteranganSingkat: 'Pendekatan kontekstual pengajaran iman Kristen menggunakan visual dan kearifan lokal.',
+                        isbn: '978-602-1234-10-1',
+                        tahunTerbit: 2023,
+                        penerbit: 'STT GIDI Press Sentani',
+                        jumlahHalaman: 198,
+                        ringkasanLengkap: 'Buku praktis bagi guru PAK yang mengajar di pos-pos pelayanan terpencil dengan keterbatasan alat peraga modern. Menyajikan ide visualisasi cerita Alkitab yang kreatif.'
+                    },
+                    {
+                        id: 11,
+                        cover: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Doktrin Roh Kudus dan Karunia-Karunia Pelayanan',
+                        kategori: 'Teologi Sistematik',
+                        author: 'Pdt. Hengki Felle, M.A.',
+                        keteranganSingkat: 'Penyelidikan teologis Pneumatologi dalam pertumbuhan jemaat abad awal hingga kini.',
+                        isbn: '978-602-1234-11-8',
+                        tahunTerbit: 2020,
+                        penerbit: 'Papua Theological Publishing',
+                        jumlahHalaman: 275,
+                        ringkasanLengkap: 'Membahas peran Roh Kudus dalam pengudusan, pimpinan pelayanan, serta pembagian karunia-karunia untuk pembangunan tubuh Kristus secara tertib dan alkitabiah.'
+                    },
+                    {
+                        id: 12,
+                        cover: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Sejarah Perkembangan Misi Seluruh Dunia',
+                        kategori: 'Sejarah Gereja & Misi',
+                        author: 'Pdt. Dr. John R. Stott',
+                        keteranganSingkat: 'Garis besar gerakan misi sejak zaman rasul-rasul hingga era penjangkauan global saat ini.',
+                        isbn: '978-979-3290-90-5',
+                        tahunTerbit: 2015,
+                        penerbit: 'Literatur SAAT',
+                        jumlahHalaman: 380,
+                        ringkasanLengkap: 'Penjelasan komprehensif mengenai bagaimana berita Injil tersebar ke seluruh benua. Sangat relevan untuk mata kuliah Misiologi dan Sejarah Gereja Umum.'
+                    },
+                    {
+                        id: 13,
+                        cover: 'https://images.unsplash.com/photo-1491841573634-28140fc7ced7?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Kepemimpinan Gembala Menurut Model Yesus',
+                        kategori: 'Konseling Pastoral',
+                        author: 'Pdt. Paipen Wonda, M.Th.',
+                        keteranganSingkat: 'Prinsip kepemimpinan hamba yang melayani dengan keteladanan, integritas, dan kasih.',
+                        isbn: '978-602-1234-13-2',
+                        tahunTerbit: 2024,
+                        penerbit: 'STT GIDI Press Sentani',
+                        jumlahHalaman: 230,
+                        ringkasanLengkap: 'Buku kepemimpinan teologis yang menekankan kerendahan hati seorang gembala. Memberikan panduan praktis pengelolaan jemaat dan pengembangan organisasi gereja.'
+                    },
+                    {
+                        id: 14,
+                        cover: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Metodologi Penelitian Teologi dan Penulisan Skripsi',
+                        kategori: 'Pendidikan Agama Kristen',
+                        author: 'Pdt. Dolfinus Suebu, M.Th.',
+                        keteranganSingkat: 'Panduan standar penyusunan karya ilmiah teologi bagi mahasiswa S1 dan S2.',
+                        isbn: '978-602-1234-14-9',
+                        tahunTerbit: 2022,
+                        penerbit: 'STT GIDI Press Sentani',
+                        jumlahHalaman: 210,
+                        ringkasanLengkap: 'Petunjuk praktis merumuskan masalah penelitian teologis, teknik analisis data kualitatif/kuantitatif, serta aturan sitasi catatan kaki Chicago Style.'
+                    },
+                    {
+                        id: 15,
+                        cover: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&q=80',
+                        judul: 'Tafsir Surat Efesus: Kesatuan Dalam Kristus',
+                        kategori: 'Hermeneutika Alkitab',
+                        author: 'Dr. Merrill C. Tenney',
+                        keteranganSingkat: 'Eksegesis mendalam atas Surat Efesus mengenai rahasia gereja dan kehidupan baru.',
+                        isbn: '978-979-8131-99-3',
+                        tahunTerbit: 2019,
+                        penerbit: 'Gandum Mas',
+                        jumlahHalaman: 290,
+                        ringkasanLengkap: 'Eksegesis pasal demi pasal Surat Efesus, menguraikan kekayaan panggil orang percaya dalam Kristus dan penerapannya dalam kehidupan jemaat lokal.'
+                    }
+                ],
+
+                // FAQ Dataset
+                faqs: [
+                    {
+                        q: 'Bagaimana cara meminjam buku fisik di E-Library STT GIDI Papua?',
+                        a: 'Anggota perpustakaan yang memiliki Kartu Anggota Aktif dapat mencari buku di katalog online ini, mencatat nomor ketersediaan/ISBN, lalu mendatangi meja sirkulasi di Perpustakaan Kampus Sentani.',
+                        open: false
+                    },
+                    {
+                        q: 'Apakah masyarakat umum di luar civitas akademika dapat berkunjung?',
+                        a: 'Masyarakat umum dan pelayan jemaat diizinkan melakukan studi pustaka di lokasi perpustakaan (baca di tempat) dengan melapor kepada petugas piket.',
+                        open: false
+                    },
+                    {
+                        q: 'Berapa lama batas waktu peminjaman buku?',
+                        a: 'Batas peminjaman standar adalah 14 hari kalender dengan jumlah maksimal 3 judul buku bagi mahasiswa. Dosen dapat meminjam hingga 5 judul buku.',
+                        open: false
+                    },
+                    {
+                        q: 'Bagaimana jika buku yang dipinjam hilang atau rusak?',
+                        a: 'Peminjam wajib melaporkan ke bagian sirkulasi dan mengganti buku dengan judul & edisi yang sama atau mengganti biaya penggantian sesuai ketentuan perpustakaan.',
+                        open: false
+                    }
+                ],
+
+                initData() {
+                    // Logic initialized on Alpine load
+                },
+
+                // Computed Filtered Books
+                get filteredBooks() {
+                    return this.books.filter(book => {
+                        const matchQuery = this.searchQuery === '' || 
+                            book.judul.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            book.author.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            book.isbn.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            book.keteranganSingkat.toLowerCase().includes(this.searchQuery.toLowerCase());
+                        
+                        const matchCat = this.selectedCategory === '' || book.kategori === this.selectedCategory;
+                        const matchAut = this.selectedAuthor === '' || book.author === this.selectedAuthor;
+
+                        return matchQuery && matchCat && matchAut;
+                    });
+                },
+
+                // Computed Total Pages
+                get totalPages() {
+                    return Math.ceil(this.filteredBooks.length / this.itemsPerPage) || 1;
+                },
+
+                // Computed Paginated Slice
+                get paginatedBooks() {
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    return this.filteredBooks.slice(start, start + this.itemsPerPage);
+                },
+
+                goToPage(page) {
+                    if (page >= 1 && page <= this.totalPages) {
+                        this.currentPage = page;
+                        // Scroll smoothly back to catalog top
+                        const el = document.getElementById('katalog');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }
+                },
+
+                resetFilters() {
+                    this.searchQuery = '';
+                    this.selectedCategory = '';
+                    this.selectedAuthor = '';
+                    this.currentPage = 1;
+                    this.showToast('Filter telah di-reset ke kondisi semula.');
+                },
+
+                focusSearch() {
+                    this.$nextTick(() => {
+                        if (this.$refs.searchInput) {
+                            this.$refs.searchInput.focus();
+                        }
+                    });
+                },
+
+                // Modal Actions
+                openBookDetail(book) {
+                    this.selectedBook = book;
+                    this.modalOpen = true;
+                },
+
+                closeModal() {
+                    this.modalOpen = false;
+                    this.selectedBook = null;
+                },
+
+                // Social Sharing Helpers
+                shareSocial(platform, book) {
+                    const pageUrl = window.location.href.split('#')[0];
+                    const shareText = `Buku Teologi STT GIDI Papua: "${book.judul}" karya ${book.author}. Informasi lengkap di E-Library:`;
+                    let url = '';
+
+                    if (platform === 'wa') {
+                        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + pageUrl)}`;
+                    } else if (platform === 'fb') {
+                        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+                    } else if (platform === 'tw') {
+                        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+                    }
+
+                    window.open(url, '_blank', 'width=600,height=400');
+                },
+
+                // Copy Book Link with Toast
+                copyBookLink(book) {
+                    const shareUrl = window.location.href.split('#')[0] + `#katalog?id=${book.id}`;
+                    
+                    // Native Fallback for iframe / safe copy
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = shareUrl;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+
+                    this.showToast('Tautan buku berhasil disalin ke clipboard!');
+                },
+
+                showToast(msg) {
+                    this.toast.message = msg;
+                    this.toast.show = true;
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 3500);
+                },
+
+                submitForm() {
+                    this.showToast('Pesan Anda berhasil terkirim. Terima kasih!');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
