@@ -4,6 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // Strip any leftover plain section hash (e.g. #katalog) from the URL as early as
+        // possible, before the browser gets a chance to auto-scroll to it. Real book-share
+        // deep links (#buku/<slug>) are left alone so the app can still open that book's modal.
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        if (location.hash && !location.hash.startsWith('#buku/')) {
+            history.replaceState(null, '', location.pathname + location.search);
+        }
+    </script>
     <title>E-Library STT GIDI Papua - Perpustakaan Digital</title>
     
     <!-- Meta SEO & Open Graph -->
@@ -156,9 +167,9 @@
         </div>
     </header>
 
-    <main id="beranda">
+    <main id="beranda" style="scroll-margin-top: 5rem;">
         <!-- Hero Section (with integrated Search & Filter) -->
-        <section id="katalog" class="relative bg-gradient-to-b from-brand-50/70 via-slate-50 to-slate-50 pt-10 pb-8 lg:pt-14 lg:pb-10 overflow-hidden">
+        <section class="relative bg-gradient-to-b from-brand-50/70 via-slate-50 to-slate-50 pt-10 pb-8 lg:pt-14 lg:pb-10 overflow-hidden">
             <!-- Decorative Subtle Grid Background -->
             <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
@@ -208,7 +219,7 @@
                 </div>
 
                 <!-- Search & Filter Card -->
-                <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-5 sm:p-7">
+                <div id="katalog" class="scroll-mt-24 bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-5 sm:p-7">
                     <div class="mb-5">
                         <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-magnifying-glass text-brand-600"></i>
@@ -293,7 +304,7 @@
         </section>
 
         <!-- Book Catalog Section -->
-        <section class="pt-10 pb-16 bg-slate-50">
+        <section id="daftar-buku" class="scroll-mt-24 pt-10 pb-16 bg-slate-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header with Counter -->
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
@@ -905,7 +916,38 @@
                 ],
 
                 async initData() {
+                    // Hero tetap ada di paling atas, tapi tampilan default saat halaman
+                    // dibuka langsung diarahkan ke section katalog buku (bukan ke hero).
+                    // Pengecualian: link share buku (#buku/<slug>) tidak dipaksa pindah,
+                    // biar openBookFromHash() yang menangani setelah data buku siap.
+                    const isBookDeepLink = window.location.hash.startsWith('#buku/');
+
+                    if (!isBookDeepLink) {
+                        history.replaceState(null, '', window.location.pathname + window.location.search);
+
+                        // Jalankan koreksi scroll di beberapa titik waktu berbeda, karena
+                        // beberapa browser baru melakukan native scroll-ke-hash saat event
+                        // 'load' (setelah gambar/font selesai) -- yaitu SETELAH initData()
+                        // ini jalan -- sehingga bisa "menang" dan menggeser posisi balik ke
+                        // #katalog. Dengan mengulang koreksi ini, punya kita yang menang terakhir.
+                        this.$nextTick(() => this.landOnCatalog());
+                        window.addEventListener('load', () => this.landOnCatalog());
+                        setTimeout(() => this.landOnCatalog(), 300);
+                    }
+
                     await this.fetchBooks();
+                },
+
+                // Scroll instan ke bagian atas grid katalog buku, pas di bawah header sticky,
+                // tanpa sisa kotak pencarian (#katalog) yang ikut kelihatan.
+                landOnCatalog() {
+                    if (window.location.hash.startsWith('#katalog/')) return;
+                    const el = document.getElementById('katalog');
+                    const header = document.querySelector('header');
+                    if (!el) return;
+                    const headerHeight = header ? header.offsetHeight : 0;
+                    const targetY = el.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    window.scrollTo({ top: Math.max(targetY, 0), behavior: 'auto' });
                 },
 
                 // Fetch all books from the public library API, following pagination
@@ -996,8 +1038,8 @@
                 goToPage(page) {
                     if (page >= 1 && page <= this.totalPages) {
                         this.currentPage = page;
-                        // Scroll smoothly back to catalog top
-                        const el = document.getElementById('katalog');
+                        // Scroll smoothly back to the top of the book grid
+                        const el = document.getElementById('daftar-buku');
                         if (el) el.scrollIntoView({ behavior: 'smooth' });
                     }
                 },
