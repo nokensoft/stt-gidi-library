@@ -157,24 +157,24 @@
     </header>
 
     <main id="beranda">
-        <!-- Hero Section -->
-        <section class="relative bg-gradient-to-b from-brand-50/70 via-slate-50 to-slate-50 py-16 lg:py-24 overflow-hidden">
+        <!-- Hero Section (with integrated Search & Filter) -->
+        <section id="katalog" class="relative bg-gradient-to-b from-brand-50/70 via-slate-50 to-slate-50 pt-10 pb-8 lg:pt-14 lg:pb-10 overflow-hidden">
             <!-- Decorative Subtle Grid Background -->
             <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
-            
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="text-center max-w-3xl mx-auto">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100 text-brand-700 text-xs sm:text-sm font-semibold mb-6 border border-brand-200/60 shadow-sm">
+                <div class="text-center max-w-3xl mx-auto mb-8">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100 text-brand-700 text-xs sm:text-sm font-semibold mb-4 border border-brand-200/60 shadow-sm">
                         <i class="fa-solid fa-book-bookmark text-brand-600"></i>
                         <span>Pusat Literatur Teologi & Pendidikan Kristen Papua</span>
                     </div>
-                    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-tight mb-6">
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-tight mb-3">
                         Akses Koleksi Literatur <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-800">STT GIDI Papua</span> Secara Digital
                     </h1>
-                    <p class="text-base sm:text-lg text-slate-600 mb-8 font-normal leading-relaxed">
+                    <p class="text-sm sm:text-base text-slate-600 mb-5 font-normal leading-relaxed">
                         Jelajahi karya teologis, buku referensi Pendidikan Agama Kristen, jurnal, dan karya akademik civitas akademika STT GIDI Papua di Sentani, Jayapura.
                     </p>
-                    
+
                     <!-- Hero Quick Stats Badge -->
                     <div class="flex flex-wrap justify-center gap-4 sm:gap-8 text-slate-700 pt-2 border-t border-slate-200/80">
                         <div class="flex items-center gap-2">
@@ -206,12 +206,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Search & Filter Bar Section -->
-        <section id="katalog" class="pt-8 pb-12 bg-slate-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Search & Filter Card -->
                 <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-5 sm:p-7">
                     <div class="mb-5">
                         <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -297,7 +293,7 @@
         </section>
 
         <!-- Book Catalog Section -->
-        <section class="pb-16 bg-slate-50">
+        <section class="pt-10 pb-16 bg-slate-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header with Counter -->
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
