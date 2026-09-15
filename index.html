@@ -96,7 +96,7 @@
          x-transition:leave="transition ease-in duration-200 transform"
          x-transition:leave-start="translate-y-0 opacity-100"
          x-transition:leave-end="translate-y-8 opacity-0"
-         class="fixed bottom-5 right-5 z-50 flex items-center gap-3 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-slate-700 max-w-md">
+         class="fixed bottom-5 right-5 z-[60] flex items-center gap-3 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-slate-700 max-w-md">
         <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
         <span class="text-sm font-medium" x-text="toast.message"></span>
     </div>
@@ -926,6 +926,7 @@
 
                         this.books = allBooks;
                         this.currentPage = 1;
+                        this.openBookFromHash();
                     } catch (err) {
                         console.error('Gagal mengambil data buku:', err);
                         this.error = 'Tidak dapat memuat data buku dari server. Periksa koneksi internet Anda dan coba lagi.';
@@ -1013,25 +1014,37 @@
                 openBookDetail(book) {
                     this.selectedBook = book;
                     this.modalOpen = true;
+                    // Reflect the book in the URL hash so the address bar itself is a shareable link
+                    const hashUrl = `${window.location.pathname}${window.location.search}#buku/${encodeURIComponent(book.slug)}`;
+                    history.replaceState(null, '', hashUrl);
                 },
 
                 closeModal() {
                     this.modalOpen = false;
                     this.selectedBook = null;
+                    if (window.location.hash.startsWith('#buku/')) {
+                        history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
+                },
+
+                // Build a shareable deep-link URL for a specific book using its slug
+                getBookShareUrl(book) {
+                    const pageUrl = window.location.href.split('#')[0];
+                    return `${pageUrl}#buku/${encodeURIComponent(book.slug)}`;
                 },
 
                 // Social Sharing Helpers
                 shareSocial(platform, book) {
-                    const pageUrl = window.location.href.split('#')[0];
+                    const shareUrl = this.getBookShareUrl(book);
                     const shareText = `Buku Teologi STT GIDI Papua: "${book.judul}". Informasi lengkap di E-Library:`;
                     let url = '';
 
                     if (platform === 'wa') {
-                        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + pageUrl)}`;
+                        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
                     } else if (platform === 'fb') {
-                        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+                        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
                     } else if (platform === 'tw') {
-                        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+                        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
                     }
 
                     window.open(url, '_blank', 'width=600,height=400');
@@ -1039,8 +1052,8 @@
 
                 // Copy Book Link with Toast
                 copyBookLink(book) {
-                    const shareUrl = window.location.href.split('#')[0] + `#katalog?id=${book.id}`;
-                    
+                    const shareUrl = this.getBookShareUrl(book);
+
                     // Native Fallback for iframe / safe copy
                     const dummy = document.createElement('input');
                     document.body.appendChild(dummy);
@@ -1050,6 +1063,18 @@
                     document.body.removeChild(dummy);
 
                     this.showToast('Tautan buku berhasil disalin ke clipboard!');
+                },
+
+                // Auto-open a book's modal when the URL contains a #buku/<slug> deep link
+                // (e.g. from a link shared to social media)
+                openBookFromHash() {
+                    const match = window.location.hash.match(/^#buku\/(.+)$/);
+                    if (!match) return;
+                    const slug = decodeURIComponent(match[1]);
+                    const book = this.books.find(b => b.slug === slug);
+                    if (book) {
+                        this.openBookDetail(book);
+                    }
                 },
 
                 showToast(msg) {
