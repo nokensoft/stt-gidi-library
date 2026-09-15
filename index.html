@@ -371,12 +371,12 @@
                                             <i class="fa-solid fa-eye text-brand-600 mr-1"></i> Detail
                                         </span>
                                     </div>
-                                    <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm truncate max-w-[85%]" x-text="book.kategoriUtama"></span>
                                 </div>
 
                                 <!-- Book Info Card Body -->
                                 <div class="p-3.5 flex flex-col flex-grow justify-between bg-white">
                                     <div>
+                                        <span class="inline-block bg-brand-50 text-brand-700 text-[10px] font-bold px-2 py-0.5 rounded mb-1.5 truncate max-w-full" x-text="book.kategoriUtama"></span>
                                         <h4 @click="openBookDetail(book)"
                                             class="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 hover:text-brand-600 cursor-pointer leading-snug mb-1.5"
                                             :title="book.judul"
@@ -655,31 +655,32 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
-                                    <input type="text" required placeholder="Contoh: Ruben Wonda" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                                    <input type="text" x-model="contactForm.nama" required placeholder="Contoh: Ruben Wonda" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">NIM / NIDN / Umum</label>
-                                    <input type="text" placeholder="Isi nomor identitas jika civitas" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                                    <input type="text" x-model="contactForm.identitas" placeholder="Isi nomor identitas jika civitas" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Email</label>
-                                <input type="email" required placeholder="nama@domain.com" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                                <input type="email" x-model="contactForm.email" required placeholder="nama@domain.com" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1">Subjek Pesan</label>
-                                <input type="text" required placeholder="Subjek pertanyaan / usul koleksi" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                                <input type="text" x-model="contactForm.subjek" required placeholder="Subjek pertanyaan / usul koleksi" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1">Isi Pesan</label>
-                                <textarea rows="4" required placeholder="Tuliskan pesan detail Anda..." class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none"></textarea>
+                                <textarea rows="4" x-model="contactForm.pesan" required placeholder="Tuliskan pesan detail Anda..." class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-brand-600 focus:outline-none"></textarea>
                             </div>
 
-                            <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all">
-                                Send Message / Kirim Pesan
+                            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-base"></i>
+                                <span>Kirim via WhatsApp</span>
                             </button>
                         </form>
                     </div>
@@ -868,6 +869,16 @@
                 toast: {
                     show: false,
                     message: ''
+                },
+
+                // Contact Form State (submitted directly to WhatsApp)
+                whatsappNumber: '6282199558191',
+                contactForm: {
+                    nama: '',
+                    identitas: '',
+                    email: '',
+                    subjek: '',
+                    pesan: ''
                 },
 
                 // Book Dataset (populated from API)
@@ -1086,7 +1097,25 @@
                 },
 
                 submitForm() {
-                    this.showToast('Pesan Anda berhasil terkirim. Terima kasih!');
+                    const f = this.contactForm;
+                    const lines = [
+                        'Halo Admin Perpustakaan STT GIDI Papua, saya ingin mengirim pesan/pengajuan buku:',
+                        '',
+                        `Nama: ${f.nama}`,
+                        f.identitas ? `NIM/NIDN: ${f.identitas}` : null,
+                        `Email: ${f.email}`,
+                        `Subjek: ${f.subjek}`,
+                        '',
+                        `Pesan: ${f.pesan}`
+                    ].filter(line => line !== null);
+
+                    const waUrl = `https://wa.me/${this.whatsappNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
+                    window.open(waUrl, '_blank');
+
+                    this.showToast('Mengarahkan ke WhatsApp untuk mengirim pesan Anda...');
+
+                    // Reset form after handing off to WhatsApp
+                    this.contactForm = { nama: '', identitas: '', email: '', subjek: '', pesan: '' };
                 }
             }
         }
