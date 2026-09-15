@@ -218,23 +218,24 @@
                             <i class="fa-solid fa-magnifying-glass text-brand-600"></i>
                             <span>Pencarian & Filter Katalog</span>
                         </h2>
-                        <p class="text-sm text-slate-500 mt-1">Cari berdasarkan judul, penulis, ISBN, atau topik materi teologis.</p>
+                        <p class="text-sm text-slate-500 mt-1">Cari berdasarkan judul atau deskripsi buku, lalu saring berdasarkan kategori.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                         <!-- Search Keyword Input -->
-                        <div class="md:col-span-5 relative">
+                        <div class="md:col-span-7 relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-search"></i>
                             </div>
-                            <input type="text" 
+                            <input type="text"
                                    x-ref="searchInput"
-                                   x-model="searchQuery" 
+                                   x-model="searchQuery"
                                    @input="currentPage = 1"
-                                   placeholder="Ketik judul buku, kata kunci, ISBN..." 
-                                   class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all placeholder:text-slate-400">
-                            <button x-cloak x-show="searchQuery.length > 0" 
-                                    @click="searchQuery = ''; currentPage = 1" 
+                                   :disabled="loading"
+                                   placeholder="Ketik judul buku atau kata kunci..."
+                                   class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all placeholder:text-slate-400 disabled:opacity-60 disabled:cursor-not-allowed">
+                            <button x-cloak x-show="searchQuery.length > 0"
+                                    @click="searchQuery = ''; currentPage = 1"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
                                 <i class="fa-solid fa-xmark text-sm"></i>
                             </button>
@@ -243,9 +244,10 @@
                         <!-- Filter Category Dropdown -->
                         <div class="md:col-span-3">
                             <div class="relative">
-                                <select x-model="selectedCategory" 
-                                        @change="currentPage = 1" 
-                                        class="w-full pl-3.5 pr-8 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all appearance-none cursor-pointer">
+                                <select x-model="selectedCategory"
+                                        @change="currentPage = 1"
+                                        :disabled="loading"
+                                        class="w-full pl-3.5 pr-8 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all appearance-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                                     <option value="">Semua Kategori</option>
                                     <template x-for="cat in categories" :key="cat">
                                         <option :value="cat" x-text="cat"></option>
@@ -257,38 +259,21 @@
                             </div>
                         </div>
 
-                        <!-- Filter Author Dropdown -->
-                        <div class="md:col-span-3">
-                            <div class="relative">
-                                <select x-model="selectedAuthor" 
-                                        @change="currentPage = 1" 
-                                        class="w-full pl-3.5 pr-8 py-3 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all appearance-none cursor-pointer">
-                                    <option value="">Semua Author/Penulis</option>
-                                    <template x-for="aut in authors" :key="aut">
-                                        <option :value="aut" x-text="aut"></option>
-                                    </template>
-                                </select>
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-                                    <i class="fa-solid fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Reset Filter Button -->
-                        <div class="md:col-span-1 flex justify-end">
-                            <button @click="resetFilters()" 
+                        <div class="md:col-span-2 flex justify-end">
+                            <button @click="resetFilters()"
                                     title="Reset Filter"
-                                    class="w-full md:w-auto h-11 px-4 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium text-sm flex items-center justify-center gap-2 transition-all">
+                                    class="w-full h-11 px-4 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium text-sm flex items-center justify-center gap-2 transition-all">
                                 <i class="fa-solid fa-rotate-left text-xs"></i>
-                                <span class="md:hidden">Reset</span>
+                                <span>Reset</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Active Filter Chips Indicator -->
-                    <div x-cloak x-show="searchQuery || selectedCategory || selectedAuthor" class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+                    <div x-cloak x-show="searchQuery || selectedCategory" class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
                         <span class="text-slate-500 font-medium">Filter Aktif:</span>
-                        
+
                         <template x-if="searchQuery">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-200">
                                 Keyword: "<span x-text="searchQuery"></span>"
@@ -300,13 +285,6 @@
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-200">
                                 Kategori: <span x-text="selectedCategory"></span>
                                 <button @click="selectedCategory = ''; currentPage = 1" class="hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
-                            </span>
-                        </template>
-
-                        <template x-if="selectedAuthor">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-200">
-                                Penulis: <span x-text="selectedAuthor"></span>
-                                <button @click="selectedAuthor = ''; currentPage = 1" class="hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
                             </span>
                         </template>
 
@@ -332,64 +310,95 @@
                     </div>
                 </div>
 
-                <!-- Empty State -->
-                <template x-if="filteredBooks.length === 0">
-                    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto my-8">
-                        <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                            <i class="fa-solid fa-book-open"></i>
+                <!-- Error State -->
+                <template x-if="!loading && error">
+                    <div class="bg-white rounded-2xl border border-red-200 p-12 text-center max-w-lg mx-auto my-8">
+                        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
                         </div>
-                        <h4 class="text-lg font-bold text-slate-800 mb-1">Buku Tidak Ditemukan</h4>
-                        <p class="text-sm text-slate-500 mb-6">Tidak ada koleksi buku yang cocok dengan kata kunci atau filter yang Anda pilih.</p>
-                        <button @click="resetFilters()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all">
-                            Reset Semua Filter
+                        <h4 class="text-lg font-bold text-slate-800 mb-1">Gagal Memuat Data Buku</h4>
+                        <p class="text-sm text-slate-500 mb-6" x-text="error"></p>
+                        <button @click="fetchBooks()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-rotate-right mr-1.5"></i>Coba Lagi
                         </button>
                     </div>
                 </template>
 
-                <!-- Books Grid (Requirement: 6 Columns x 2 Rows = 12 items per page) -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
-                    <template x-for="book in paginatedBooks" :key="book.id">
-                        <div class="group bg-white rounded-xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden h-full">
-                            <!-- Book Cover Thumbnail -->
-                            <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden cursor-pointer" @click="openBookDetail(book)">
-                                <img :src="book.cover" 
-                                     :alt="book.judul" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                     loading="lazy"
-                                     onerror="this.onerror=null; this.src='https://placehold.co/400x533/6f42c1/ffffff?text=Buku+Teologi';">
-                                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <span class="bg-white/90 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                                        <i class="fa-solid fa-eye text-brand-600 mr-1"></i> Detail
-                                    </span>
-                                </div>
-                                <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm truncate max-w-[85%]" x-text="book.kategori"></span>
-                            </div>
-
-                            <!-- Book Info Card Body -->
-                            <div class="p-3.5 flex flex-col flex-grow justify-between bg-white">
-                                <div>
-                                    <p class="text-[11px] font-semibold text-brand-700 mb-0.5 truncate" x-text="book.author"></p>
-                                    <h4 @click="openBookDetail(book)" 
-                                        class="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 hover:text-brand-600 cursor-pointer leading-snug mb-1.5" 
-                                        :title="book.judul" 
-                                        x-text="book.judul"></h4>
-                                    <p class="text-[11px] text-slate-500 line-clamp-2 leading-tight mb-2" x-text="book.keteranganSingkat"></p>
-                                </div>
-
-                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 mt-auto">
-                                    <span x-text="book.tahunTerbit"></span>
-                                    <button @click="openBookDetail(book)" class="text-brand-600 font-bold hover:underline flex items-center gap-1">
-                                        <span>Lihat</span>
-                                        <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                                    </button>
-                                </div>
+                <!-- Loading Skeleton Placeholder -->
+                <div x-show="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
+                    <template x-for="n in itemsPerPage" :key="'skeleton-' + n">
+                        <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden animate-pulse">
+                            <div class="aspect-[3/4] bg-slate-200"></div>
+                            <div class="p-3.5 space-y-2">
+                                <div class="h-2.5 bg-slate-200 rounded w-2/3"></div>
+                                <div class="h-2.5 bg-slate-200 rounded w-full"></div>
+                                <div class="h-2.5 bg-slate-200 rounded w-5/6"></div>
+                                <div class="h-2 bg-slate-100 rounded w-1/2 mt-3"></div>
                             </div>
                         </div>
                     </template>
                 </div>
 
+                <template x-if="!loading && !error">
+                <div>
+                    <!-- Empty State -->
+                    <template x-if="filteredBooks.length === 0">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto my-8">
+                            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-slate-800 mb-1">Buku Tidak Ditemukan</h4>
+                            <p class="text-sm text-slate-500 mb-6">Tidak ada koleksi buku yang cocok dengan kata kunci atau filter yang Anda pilih.</p>
+                            <button @click="resetFilters()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all">
+                                Reset Semua Filter
+                            </button>
+                        </div>
+                    </template>
+
+                    <!-- Books Grid (Requirement: 6 Columns x 2 Rows = 12 items per page) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
+                        <template x-for="book in paginatedBooks" :key="book.id">
+                            <div class="group bg-white rounded-xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden h-full">
+                                <!-- Book Cover Thumbnail -->
+                                <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden cursor-pointer" @click="openBookDetail(book)">
+                                    <img :src="book.cover"
+                                         :alt="book.judul"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                         loading="lazy"
+                                         onerror="this.onerror=null; this.src='https://placehold.co/400x533/6f42c1/ffffff?text=Buku+Teologi';">
+                                    <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="bg-white/90 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                                            <i class="fa-solid fa-eye text-brand-600 mr-1"></i> Detail
+                                        </span>
+                                    </div>
+                                    <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm truncate max-w-[85%]" x-text="book.kategoriUtama"></span>
+                                </div>
+
+                                <!-- Book Info Card Body -->
+                                <div class="p-3.5 flex flex-col flex-grow justify-between bg-white">
+                                    <div>
+                                        <h4 @click="openBookDetail(book)"
+                                            class="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 hover:text-brand-600 cursor-pointer leading-snug mb-1.5"
+                                            :title="book.judul"
+                                            x-text="book.judul"></h4>
+                                        <p class="text-[11px] text-slate-500 line-clamp-3 leading-tight mb-2" x-text="book.keteranganSingkat"></p>
+                                    </div>
+
+                                    <div class="pt-2 border-t border-slate-100 flex items-center justify-end text-[11px] text-slate-400 mt-auto">
+                                        <button @click="openBookDetail(book)" class="text-brand-600 font-bold hover:underline flex items-center gap-1">
+                                            <span>Lihat</span>
+                                            <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                </template>
+
                 <!-- Pagination Component -->
-                <div x-cloak x-show="totalPages > 1" class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200">
+                <div x-cloak x-show="!loading && !error && totalPages > 1" class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200">
                     <div class="text-xs text-slate-500">
                         Menampilkan halaman <span class="font-bold text-slate-800" x-text="currentPage"></span> dari <span class="font-bold text-slate-800" x-text="totalPages"></span> halaman
                     </div>
@@ -724,25 +733,17 @@
                                 </div>
 
                                 <div class="space-y-2.5 text-xs text-slate-600">
-                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
-                                        <span class="font-semibold text-slate-500">Kategori:</span>
-                                        <span class="font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded" x-text="selectedBook.kategori"></span>
-                                    </div>
-                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
-                                        <span class="font-semibold text-slate-500">ISBN:</span>
-                                        <span class="font-mono text-slate-800" x-text="selectedBook.isbn"></span>
-                                    </div>
-                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
-                                        <span class="font-semibold text-slate-500">Tahun Terbit:</span>
-                                        <span class="font-semibold text-slate-800" x-text="selectedBook.tahunTerbit"></span>
-                                    </div>
-                                    <div class="flex justify-between py-1.5 border-b border-slate-200/60">
-                                        <span class="font-semibold text-slate-500">Penerbit:</span>
-                                        <span class="font-semibold text-slate-800" x-text="selectedBook.penerbit"></span>
+                                    <div class="py-1.5 border-b border-slate-200/60">
+                                        <span class="font-semibold text-slate-500 block mb-1.5">Kategori:</span>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <template x-for="cat in selectedBook.categories" :key="cat">
+                                                <span class="font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded text-[11px]" x-text="cat"></span>
+                                            </template>
+                                        </div>
                                     </div>
                                     <div class="flex justify-between py-1.5">
-                                        <span class="font-semibold text-slate-500">Halaman:</span>
-                                        <span class="font-semibold text-slate-800" x-text="selectedBook.jumlahHalaman + ' Halaman'"></span>
+                                        <span class="font-semibold text-slate-500">Status:</span>
+                                        <span class="font-semibold" :class="selectedBook.active ? 'text-emerald-600' : 'text-slate-400'" x-text="selectedBook.active ? 'Tersedia' : 'Tidak Tersedia'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -759,10 +760,7 @@
                         <div class="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
                             <div>
                                 <span class="text-xs font-bold text-brand-600 uppercase tracking-wide">Detail Katalog Digital</span>
-                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1 mb-2 leading-snug" x-text="selectedBook.judul"></h2>
-                                <p class="text-xs sm:text-sm font-semibold text-slate-600 mb-4">
-                                    Penulis: <span class="text-brand-700 font-bold" x-text="selectedBook.author"></span>
-                                </p>
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1 mb-4 leading-snug" x-text="selectedBook.judul"></h2>
 
                                 <div class="border-t border-slate-100 pt-4 mb-6">
                                     <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">Ringkasan / Sinopsis Buku</h4>
@@ -859,234 +857,21 @@
                 selectedBook: null,
                 searchQuery: '',
                 selectedCategory: '',
-                selectedAuthor: '',
                 currentPage: 1,
                 itemsPerPage: 12, // 6 columns x 2 rows = 12 items per page
+
+                // API Configuration
+                apiUrl: 'https://adminpanel.sttgidi.com/api/public/library/books',
+                loading: true,
+                error: null,
 
                 toast: {
                     show: false,
                     message: ''
                 },
 
-                // Unique Category List
-                categories: [
-                    'Teologi Sistematik',
-                    'Pendidikan Agama Kristen',
-                    'Hermeneutika Alkitab',
-                    'Etika Kristen',
-                    'Sejarah Gereja & Misi',
-                    'Konseling Pastoral'
-                ],
-
-                // Unique Author List
-                authors: [
-                    'Pdt. Paipen Wonda, M.Th.',
-                    'Pdt. Dr. John R. Stott',
-                    'Pdt. Hengki Felle, M.A.',
-                    'Pdt. Kim Chul Gu, M.Div.',
-                    'Dr. Merrill C. Tenney',
-                    'Pdt. Dolfinus Suebu, M.Th.',
-                    'Dr. Harun Hadiwijono'
-                ],
-
-                // Realistic Theological & PAK Books Dataset (15 Books)
-                books: [
-                    {
-                        id: 1,
-                        cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Teologi Eklesiologi Injili di Tanah Papua',
-                        kategori: 'Teologi Sistematik',
-                        author: 'Pdt. Paipen Wonda, M.Th.',
-                        keteranganSingkat: 'Kajian teologis mendalam mengenai pertumbuhan gereja Injili di Papua dan dinamika pelayanan konteks lokal.',
-                        isbn: '978-602-1234-01-9',
-                        tahunTerbit: 2022,
-                        penerbit: 'STT GIDI Press Sentani',
-                        jumlahHalaman: 284,
-                        ringkasanLengkap: 'Buku ini membahas konsep gereja yang alkitabiah, mandiri, dan berakar kuat dalam budaya Papua. Melalui tinjauan biblika dan historis, penulis menguraikan perjalanan Gereja Injili di Indonesia (GIDI) serta tantangan misi holistik di abad ke-21.\n\nSangat cocok untuk mahasiswa S1 Teologi, pendeta, dan praktisi misi gereja.'
-                    },
-                    {
-                        id: 2,
-                        cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Pengantar Hermeneutika Alkitab Kontekstual',
-                        kategori: 'Hermeneutika Alkitab',
-                        author: 'Pdt. Hengki Felle, M.A.',
-                        keteranganSingkat: 'Prinsip-prinsip penafsiran Alkitab secara rinci dari teks bahasa asli ke dalam pemahaman jemaat.',
-                        isbn: '978-602-1234-02-6',
-                        tahunTerbit: 2021,
-                        penerbit: 'Papua Theological Publishing',
-                        jumlahHalaman: 310,
-                        ringkasanLengkap: 'Hermeneutika merupakan kunci utama dalam merumuskan khotbah dan pengajaran Injil yang murni. Buku ini membimbing pembaca memahami latar belakang sejarah, tata bahasa, serta penerapan praktis agar terhindar dari eksegesis yang salah.'
-                    },
-                    {
-                        id: 3,
-                        cover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Pendidikan Agama Kristen Kurikulum Berbasis Karakter',
-                        kategori: 'Pendidikan Agama Kristen',
-                        author: 'Pdt. Kim Chul Gu, M.Div.',
-                        keteranganSingkat: 'Panduan pengajaran PAK anak dan remaja dalam lingkungan sekolah dan gereja lokal.',
-                        isbn: '978-602-1234-03-3',
-                        tahunTerbit: 2020,
-                        penerbit: 'STT GIDI Press Sentani',
-                        jumlahHalaman: 245,
-                        ringkasanLengkap: 'Pembentukan karakter Kristiani sejak dini adalah fondasi generasi penerus di Papua. Buku kurikulum PAK ini menyajikan metodologi pengajaran interaktif yang relevan bagi para guru PAK dan pembina pemuda.'
-                    },
-                    {
-                        id: 4,
-                        cover: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Etika Kristen dan Isu-Isu Sosial Kontemporer',
-                        kategori: 'Etika Kristen',
-                        author: 'Pdt. Dolfinus Suebu, M.Th.',
-                        keteranganSingkat: 'Pendekatan etis Alkitabiah menghadapi tantangan modernisasi, keadilan, dan keutuhan ciptaan.',
-                        isbn: '978-602-1234-04-0',
-                        tahunTerbit: 2023,
-                        penerbit: 'Cahaya Teologi Jayapura',
-                        jumlahHalaman: 215,
-                        ringkasanLengkap: 'Buku ini menganalisis prinsip etika Kristen dalam menghadapi berbagai isu sosial modern. Memberikan pijakan iman bagi mahasiswa teologi agar mampu memberikan suara kenabian yang santun dan berintegritas.'
-                    },
-                    {
-                        id: 5,
-                        cover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Sejarah Perintisan Misi dan Pekabaran Injil di Pegunungan Papua',
-                        kategori: 'Sejarah Gereja & Misi',
-                        author: 'Pdt. Paipen Wonda, M.Th.',
-                        keteranganSingkat: 'Dokumentasi historis perjuangan misionaris lokal dan luar negeri dalam membuka daerah pelayanan baru.',
-                        isbn: '978-602-1234-05-7',
-                        tahunTerbit: 2019,
-                        penerbit: 'GIDI Heritage Press',
-                        jumlahHalaman: 412,
-                        ringkasanLengkap: 'Sebuah catatan sejarah berharga tentang bagaimana Injil masuk dan mengubah tatanan kehidupan masyarakat di pedalaman Papua. Dilengkapi foto dokumentasi masa lalu dan saksi sejarah.'
-                    },
-                    {
-                        id: 6,
-                        cover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Konseling Pastoral Bagi Keluarga dan Jemaat',
-                        kategori: 'Konseling Pastoral',
-                        author: 'Pdt. Dolfinus Suebu, M.Th.',
-                        keteranganSingkat: 'Metode pendampingan jiwa berbasis empati Kristiani bagi jemaat yang mengalami pergumulan hidup.',
-                        isbn: '978-602-1234-06-4',
-                        tahunTerbit: 2021,
-                        penerbit: 'STT GIDI Press Sentani',
-                        jumlahHalaman: 260,
-                        ringkasanLengkap: 'Setiap hamba Tuhan dipanggil menjadi gembala yang merawat jiwa. Buku ini menguraikan teknik dasar konseling, pendengaran aktif, dan pemulihan trauma konteks masyarakat lokal.'
-                    },
-                    {
-                        id: 7,
-                        cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Kristologi: Pribadi dan Karya Kristus',
-                        kategori: 'Teologi Sistematik',
-                        author: 'Dr. Harun Hadiwijono',
-                        keteranganSingkat: 'Penyelidikan alkitabiah mengenai doktrin ke-Allahan dan kemanusiaan Yesus Kristus.',
-                        isbn: '978-979-415-102-1',
-                        tahunTerbit: 2018,
-                        penerbit: 'BPK Gunung Mulia',
-                        jumlahHalaman: 340,
-                        ringkasanLengkap: 'Buku teks standar teologi dogmatika mengenai doktrin Kristologi. Membahas nubuat Perjanjian Lama, penggenapan dalam Perjanjian Baru, dan relevansi iman Kristologis hari ini.'
-                    },
-                    {
-                        id: 8,
-                        cover: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Murid Kristus yang Radikal (The Radical Disciple)',
-                        kategori: 'Etika Kristen',
-                        author: 'Pdt. Dr. John R. Stott',
-                        keteranganSingkat: 'Panggilan pemusidanan yang setia dalam aspek kepedulian sosial, kesederhanaan, dan keesaan.',
-                        isbn: '978-979-3290-88-2',
-                        tahunTerbit: 2017,
-                        penerbit: 'Literatur SAAT',
-                        jumlahHalaman: 180,
-                        ringkasanLengkap: 'Karya klasik John Stott yang menantang orang percaya untuk tidak hanya sekadar mengaku Kristen, namun menjadi murid radikal yang hidupnya mencerminkan nilai-nilai Kerajaan Allah.'
-                    },
-                    {
-                        id: 9,
-                        cover: 'https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Survei Perjanjian Baru Bagi Mahasiswa Teologi',
-                        kategori: 'Hermeneutika Alkitab',
-                        author: 'Dr. Merrill C. Tenney',
-                        keteranganSingkat: 'Latar belakang sejarah, kebudayaan, dan kanonisasi 27 kitab Perjanjian Baru.',
-                        isbn: '978-979-8131-40-5',
-                        tahunTerbit: 2016,
-                        penerbit: 'Gandum Mas',
-                        jumlahHalaman: 512,
-                        ringkasanLengkap: 'Buku pegangan utama pengantar Perjanjian Baru di kampus teologi. Dilengkapi peta geografis, bagan silsilah, dan analisa tema-tema utama tiap kitab.'
-                    },
-                    {
-                        id: 10,
-                        cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Strategi Pengajaran PAK Efektif di Daerah Pedalaman',
-                        kategori: 'Pendidikan Agama Kristen',
-                        author: 'Pdt. Kim Chul Gu, M.Div.',
-                        keteranganSingkat: 'Pendekatan kontekstual pengajaran iman Kristen menggunakan visual dan kearifan lokal.',
-                        isbn: '978-602-1234-10-1',
-                        tahunTerbit: 2023,
-                        penerbit: 'STT GIDI Press Sentani',
-                        jumlahHalaman: 198,
-                        ringkasanLengkap: 'Buku praktis bagi guru PAK yang mengajar di pos-pos pelayanan terpencil dengan keterbatasan alat peraga modern. Menyajikan ide visualisasi cerita Alkitab yang kreatif.'
-                    },
-                    {
-                        id: 11,
-                        cover: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Doktrin Roh Kudus dan Karunia-Karunia Pelayanan',
-                        kategori: 'Teologi Sistematik',
-                        author: 'Pdt. Hengki Felle, M.A.',
-                        keteranganSingkat: 'Penyelidikan teologis Pneumatologi dalam pertumbuhan jemaat abad awal hingga kini.',
-                        isbn: '978-602-1234-11-8',
-                        tahunTerbit: 2020,
-                        penerbit: 'Papua Theological Publishing',
-                        jumlahHalaman: 275,
-                        ringkasanLengkap: 'Membahas peran Roh Kudus dalam pengudusan, pimpinan pelayanan, serta pembagian karunia-karunia untuk pembangunan tubuh Kristus secara tertib dan alkitabiah.'
-                    },
-                    {
-                        id: 12,
-                        cover: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Sejarah Perkembangan Misi Seluruh Dunia',
-                        kategori: 'Sejarah Gereja & Misi',
-                        author: 'Pdt. Dr. John R. Stott',
-                        keteranganSingkat: 'Garis besar gerakan misi sejak zaman rasul-rasul hingga era penjangkauan global saat ini.',
-                        isbn: '978-979-3290-90-5',
-                        tahunTerbit: 2015,
-                        penerbit: 'Literatur SAAT',
-                        jumlahHalaman: 380,
-                        ringkasanLengkap: 'Penjelasan komprehensif mengenai bagaimana berita Injil tersebar ke seluruh benua. Sangat relevan untuk mata kuliah Misiologi dan Sejarah Gereja Umum.'
-                    },
-                    {
-                        id: 13,
-                        cover: 'https://images.unsplash.com/photo-1491841573634-28140fc7ced7?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Kepemimpinan Gembala Menurut Model Yesus',
-                        kategori: 'Konseling Pastoral',
-                        author: 'Pdt. Paipen Wonda, M.Th.',
-                        keteranganSingkat: 'Prinsip kepemimpinan hamba yang melayani dengan keteladanan, integritas, dan kasih.',
-                        isbn: '978-602-1234-13-2',
-                        tahunTerbit: 2024,
-                        penerbit: 'STT GIDI Press Sentani',
-                        jumlahHalaman: 230,
-                        ringkasanLengkap: 'Buku kepemimpinan teologis yang menekankan kerendahan hati seorang gembala. Memberikan panduan praktis pengelolaan jemaat dan pengembangan organisasi gereja.'
-                    },
-                    {
-                        id: 14,
-                        cover: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Metodologi Penelitian Teologi dan Penulisan Skripsi',
-                        kategori: 'Pendidikan Agama Kristen',
-                        author: 'Pdt. Dolfinus Suebu, M.Th.',
-                        keteranganSingkat: 'Panduan standar penyusunan karya ilmiah teologi bagi mahasiswa S1 dan S2.',
-                        isbn: '978-602-1234-14-9',
-                        tahunTerbit: 2022,
-                        penerbit: 'STT GIDI Press Sentani',
-                        jumlahHalaman: 210,
-                        ringkasanLengkap: 'Petunjuk praktis merumuskan masalah penelitian teologis, teknik analisis data kualitatif/kuantitatif, serta aturan sitasi catatan kaki Chicago Style.'
-                    },
-                    {
-                        id: 15,
-                        cover: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&q=80',
-                        judul: 'Tafsir Surat Efesus: Kesatuan Dalam Kristus',
-                        kategori: 'Hermeneutika Alkitab',
-                        author: 'Dr. Merrill C. Tenney',
-                        keteranganSingkat: 'Eksegesis mendalam atas Surat Efesus mengenai rahasia gereja dan kehidupan baru.',
-                        isbn: '978-979-8131-99-3',
-                        tahunTerbit: 2019,
-                        penerbit: 'Gandum Mas',
-                        jumlahHalaman: 290,
-                        ringkasanLengkap: 'Eksegesis pasal demi pasal Surat Efesus, menguraikan kekayaan panggil orang percaya dalam Kristus dan penerapannya dalam kehidupan jemaat lokal.'
-                    }
-                ],
+                // Book Dataset (populated from API)
+                books: [],
 
                 // FAQ Dataset
                 faqs: [
@@ -1112,23 +897,80 @@
                     }
                 ],
 
-                initData() {
-                    // Logic initialized on Alpine load
+                async initData() {
+                    await this.fetchBooks();
+                },
+
+                // Fetch all books from the public library API, following pagination
+                // so the UI can do its own fast client-side search/filter/pagination.
+                async fetchBooks() {
+                    this.loading = true;
+                    this.error = null;
+                    try {
+                        let allBooks = [];
+                        let page = 1;
+                        let lastPage = 1;
+
+                        do {
+                            // Note: the API redirects (breaking CORS) if per_page exceeds 50, so we cap it there.
+                            const res = await fetch(`${this.apiUrl}?page=${page}&per_page=50`);
+                            if (!res.ok) {
+                                throw new Error('Gagal memuat data (Status ' + res.status + ')');
+                            }
+                            const json = await res.json();
+                            const items = Array.isArray(json.data) ? json.data : [];
+                            allBooks = allBooks.concat(items.map(item => this.mapBook(item)));
+                            lastPage = (json.meta && json.meta.last_page) ? json.meta.last_page : 1;
+                            page++;
+                        } while (page <= lastPage);
+
+                        this.books = allBooks;
+                        this.currentPage = 1;
+                    } catch (err) {
+                        console.error('Gagal mengambil data buku:', err);
+                        this.error = 'Tidak dapat memuat data buku dari server. Periksa koneksi internet Anda dan coba lagi.';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                // Normalize raw API book object into the shape used across the UI
+                mapBook(item) {
+                    const categoryTitles = Array.isArray(item.categories)
+                        ? item.categories.map(c => c.title).filter(Boolean)
+                        : [];
+
+                    return {
+                        id: item.id,
+                        slug: item.slug,
+                        judul: item.title || 'Tanpa Judul',
+                        categories: categoryTitles,
+                        kategoriUtama: categoryTitles[0] || 'Umum',
+                        keteranganSingkat: item.description || 'Belum ada deskripsi untuk buku ini.',
+                        ringkasanLengkap: item.description || 'Deskripsi lengkap belum tersedia untuk buku ini.',
+                        cover: (item.cover && item.cover.url) ? item.cover.url : 'https://placehold.co/400x533/6f42c1/ffffff?text=' + encodeURIComponent(item.title || 'Buku'),
+                        active: !!item.active
+                    };
+                },
+
+                // Unique Category List (derived from loaded books)
+                get categories() {
+                    const set = new Set();
+                    this.books.forEach(book => book.categories.forEach(cat => set.add(cat)));
+                    return Array.from(set).sort((a, b) => a.localeCompare(b));
                 },
 
                 // Computed Filtered Books
                 get filteredBooks() {
                     return this.books.filter(book => {
-                        const matchQuery = this.searchQuery === '' || 
-                            book.judul.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                            book.author.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                            book.isbn.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                            book.keteranganSingkat.toLowerCase().includes(this.searchQuery.toLowerCase());
-                        
-                        const matchCat = this.selectedCategory === '' || book.kategori === this.selectedCategory;
-                        const matchAut = this.selectedAuthor === '' || book.author === this.selectedAuthor;
+                        const query = this.searchQuery.toLowerCase();
+                        const matchQuery = this.searchQuery === '' ||
+                            book.judul.toLowerCase().includes(query) ||
+                            book.keteranganSingkat.toLowerCase().includes(query);
 
-                        return matchQuery && matchCat && matchAut;
+                        const matchCat = this.selectedCategory === '' || book.categories.includes(this.selectedCategory);
+
+                        return matchQuery && matchCat;
                     });
                 },
 
@@ -1155,7 +997,6 @@
                 resetFilters() {
                     this.searchQuery = '';
                     this.selectedCategory = '';
-                    this.selectedAuthor = '';
                     this.currentPage = 1;
                     this.showToast('Filter telah di-reset ke kondisi semula.');
                 },
@@ -1182,7 +1023,7 @@
                 // Social Sharing Helpers
                 shareSocial(platform, book) {
                     const pageUrl = window.location.href.split('#')[0];
-                    const shareText = `Buku Teologi STT GIDI Papua: "${book.judul}" karya ${book.author}. Informasi lengkap di E-Library:`;
+                    const shareText = `Buku Teologi STT GIDI Papua: "${book.judul}". Informasi lengkap di E-Library:`;
                     let url = '';
 
                     if (platform === 'wa') {
