@@ -346,13 +346,6 @@
                                             x-text="book.judul"></h4>
                                         <p class="text-[11px] text-slate-500 line-clamp-3 leading-tight mb-2" x-text="book.keteranganSingkat"></p>
                                     </div>
-
-                                    <div class="pt-2 border-t border-slate-100 flex items-center justify-end text-[11px] text-slate-400 mt-auto">
-                                        <button @click="openBookDetail(book)" class="text-brand-600 font-bold hover:underline flex items-center gap-1">
-                                            <span>Lihat</span>
-                                            <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -436,6 +429,8 @@
 
 
 
+      
+        
         <!-- Terms & Conditions Section -->
         <section id="syarat" class="py-16 bg-slate-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -444,42 +439,91 @@
                         <i class="fa-solid fa-file-contract"></i> Aturan Layanan
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Syarat & Ketentuan Layanan</h2>
-                    <p class="text-sm text-slate-500 mt-2">Ketentuan peminjaman buku fisik dan akses repositori digital STT GIDI Papua.</p>
+                    <p class="text-sm text-slate-500 mt-2">Ketentuan peminjaman dan pengembalian koleksi buku Perpustakaan STT GIDI Papua.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
-                            1
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 5.1 Syarat Peminjaman -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                                1
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-3">Syarat Peminjaman</h3>
+                            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                                <li>Hanya dilakukan oleh anggota perpustakaan yang sah.</li>
+                                <li>Wajib menunjukkan kartu anggota atau identitas resmi.</li>
+                                <li>Bebas dari sanksi dan tunggakan (denda/buku yang belum dikembalikan).</li>
+                            </ul>
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 mb-2">Keanggotaan & Kartu Perpustakaan</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Layanan perpustakaan berlaku untuk seluruh Civitas Akademika STT GIDI Papua (Dosen, Mahasiswa S1 Teologi, S1 PAK) yang telah mendaftarkan Kartu Anggota Perpustakaan aktif.
-                        </p>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
-                            2
+                    <!-- 5.2 Jumlah Maksimal Buku -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                                2
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-3">Jumlah Maksimal Buku</h3>
+                            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                                <li>Maksimal meminjam 2–3 eksemplar buku dalam satu waktu.</li>
+                                <li>Jumlah peminjaman dapat disesuaikan berdasarkan kebijakan perpustakaan.</li>
+                            </ul>
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 mb-2">Prosedur Peminjaman Buku</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Maksimal peminjaman adalah 3 judul buku selama 14 hari kalender. Perpanjangan dapat dilakukan 1 kali secara online melalui katalog atau melapor langsung ke petugas perpustakaan.
-                        </p>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
-                            3
+                    <!-- 5.3 Lama Masa Pinjam -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                                3
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-3">Lama Masa Pinjam</h3>
+                            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                                <li>Masa peminjaman buku adalah 7 (tujuh) hari sejak tanggal peminjaman.</li>
+                                <li>Koleksi tertentu dapat memiliki masa pinjam berbeda sesuai ketentuan.</li>
+                            </ul>
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 mb-2">Hak Cipta & Etika Digital</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Seluruh materi digital yang dipublikasikan dalam situs E-Library dilindungi hak cipta. Pengutipan karya wajib mencantumkan sumber sitasi resmi sesuai standar akademik.
-                        </p>
+                    </div>
+
+                    <!-- 5.4 Ketentuan Perpanjangan -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                                4
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-3">Ketentuan Perpanjangan</h3>
+                            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                                <li>Perpanjangan dapat dilakukan maksimal 1 (satu) kali.</li>
+                                <li>Wajib dilakukan sebelum masa pinjam berakhir.</li>
+                                <li>Buku yang sedang dipesan anggota lain tidak dapat diperpanjang.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 5.5 Prosedur Pengembalian -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between lg:col-span-2">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xl mb-4">
+                                5
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-3">Prosedur Pengembalian</h3>
+                            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                                <li>Dikembalikan langsung ke petugas perpustakaan sesuai tanggal jatuh tempo.</li>
+                                <li>Peminjam wajib memastikan buku dalam kondisi baik saat dikembalikan.</li>
+                                <li>Pengembalian akan dicatat petugas sebagai bukti bahwa kewajiban telah dipenuhi.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
+
+
+
+
+        
+        
 
         <!-- Photo Gallery Section -->
         <section id="galeri" class="py-16 bg-white border-t border-slate-200">
@@ -495,36 +539,77 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=600&q=80" alt="Ruang Baca Kampus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/5] bg-slate-100 shadow-sm">
+                        <img src="./img/galeri/galeri-1.jpg" alt="Ruang Baca Kampus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                             <span class="text-white text-xs font-medium">Ruang Baca Utama</span>
                         </div>
                     </div>
-                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80" alt="Rak Koleksi Teologi" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/5] bg-slate-100 shadow-sm">
+                        <img src="./img/galeri/galeri-2.jpg" alt="Rak Koleksi Teologi" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                            <span class="text-white text-xs font-medium">Koleksi Rak Teologi</span>
+                            <span class="text-white text-xs font-medium">Ruang Komputer</span>
                         </div>
                     </div>
-                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&q=80" alt="Diskusi Kelompok Mahasiswa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/5] bg-slate-100 shadow-sm">
+                        <img src="./img/galeri/galeri-3.jpg" alt="Diskusi Kelompok Mahasiswa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                            <span class="text-white text-xs font-medium">Area Diskusi Akademik</span>
+                            <span class="text-white text-xs font-medium">Rak Buku & Tempat Membaca</span>
                         </div>
                     </div>
-                    <div class="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=600&q=80" alt="Komputer Katalog Digital" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="group relative rounded-xl overflow-hidden aspect-[4/5] bg-slate-100 shadow-sm">
+                        <img src="./img/galeri/galeri-4.jpg" alt="Komputer Katalog Digital" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                            <span class="text-white text-xs font-medium">Layanan Komputer OPAC</span>
+                            <span class="text-white text-xs font-medium">Mahasiswa & Buku</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+
+
+
+
+
+       
+        
+
         <!-- FAQ Section -->
-        <section id="faq" class="py-16 bg-slate-50 border-t border-slate-200">
+        <section id="faq" class="py-16 bg-slate-50 border-t border-slate-200" x-data="{
+            faqs: [
+                {
+                    q: 'Siapa saja yang dapat menjadi anggota perpustakaan?',
+                    a: 'Keanggotaan terbuka untuk mahasiswa (otomatis setelah registrasi dengan menunjukkan KTM), dosen (tetap/tidak tetap), tenaga kependidikan/karyawan, serta alumni dan pengunjung umum yang memenuhi persyaratan administrasi.',
+                    open: false
+                },
+                {
+                    q: 'Kapan jam operasional layanan perpustakaan?',
+                    a: 'Perpustakaan buka pada hari Senin sampai Jumat pukul 08.00 – 16.00 WIT. Perpustakaan tutup pada hari Sabtu, Minggu, dan hari libur nasional.',
+                    open: false
+                },
+                {
+                    q: 'Berapa banyak buku yang bisa dipinjam dan berapa lama jangka waktunya?',
+                    a: 'Anggota dapat meminjam maksimal 2–3 eksemplar buku dengan durasi peminjaman selama 7 (tujuh) hari. Perpanjangan dapat dilakukan maksimal 1 kali sebelum masa pinjam berakhir.',
+                    open: false
+                },
+                {
+                    q: 'Koleksi apa saja yang tidak boleh dipinjam keluar?',
+                    a: 'Koleksi referensi (kamus, ensiklopedia, tafsiran Alkitab), karya ilmiah (skripsi, tesis), jurnal, majalah ilmiah, serta koleksi langka/khusus hanya boleh dibaca di tempat.',
+                    open: false
+                },
+                {
+                    q: 'Berapa denda keterlambatan dan sanksi jika buku hilang/rusak?',
+                    a: 'Keterlambatan dikenakan denda Rp1.000 – Rp2.000/buku/hari. Jika buku rusak atau hilang, peminjam wajib memperbaiki atau mengganti dengan buku yang sama/setara yang ditentukan perpustakaan.',
+                    open: false
+                },
+                {
+                    q: 'Aturan dan larangan apa saja yang berlaku di dalam perpustakaan?',
+                    a: 'Pengunjung wajib menjaga ketenangan (HP di-silent), tidak membawa makanan/minuman, tidak merokok, tidak mengembalikan buku sendiri ke rak (letakkan di tempat khusus), dan menitipkan tas di area yang disediakan.',
+                    open: false
+                }
+            ]
+        }">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
@@ -550,6 +635,10 @@
             </div>
         </section>
 
+
+
+
+
         <!-- Contact Section -->
         <section id="kontak" class="py-16 bg-white border-t border-slate-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -574,7 +663,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                            <!-- <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                 <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                                     <i class="fa-solid fa-envelope-open-text"></i>
                                 </div>
@@ -582,17 +671,28 @@
                                     <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Email Resmi Perpustakaan</h4>
                                     <p class="text-xs text-slate-600 mt-0.5">sttgijayapura@gmail.com</p>
                                 </div>
-                            </div>
+                            </div> -->
 
+                            
+                            
                             <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                 <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                                     <i class="fa-solid fa-phone"></i>
                                 </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Telepon / WhatsApp</h4>
-                                    <p class="text-xs text-slate-600 mt-0.5">+62 821-8741-5686</p>
+                                <div class="space-y-1.5">
+                                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Telepon / WhatsApp Admin</h4>
+                                    <div class="flex flex-col gap-1 text-xs text-slate-600">
+                                        <a href="https://wa.me/6282354516612" target="_blank" class="hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium">
+                                            <i class="fa-brands fa-whatsapp text-emerald-600"></i> +62 823-5451-6612 <span class="text-slate-400 font-normal">(Nemius)</span>
+                                        </a>
+                                        <a href="https://wa.me/6281334220097" target="_blank" class="hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium">
+                                            <i class="fa-brands fa-whatsapp text-emerald-600"></i> +62 813-3422-0097 <span class="text-slate-400 font-normal">(Bincar Sibarani)</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
+
+
 
                             <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                 <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
